@@ -9,10 +9,25 @@ import com.stackroute.datamunger.query.DataTypeDefinitions;
 import com.stackroute.datamunger.query.Header;
 
 public class CsvQueryProcessor extends QueryProcessingEngine {
-
+    private String file = new String();
+    private BufferedReader crunchifyBuffer = null;
+    public String[] frow;
+    public String[] srow;
+    
+    
 	// parameterized constructor to initialize filename
 	public CsvQueryProcessor(String fileName) throws FileNotFoundException {
-
+             this.file=fileName;
+             crunchifyBuffer = new BufferedReader(new FileReader(file.trim()));
+             try {
+				this.frow =crunchifyBuffer.readLine().split(",");
+			
+				this.srow =crunchifyBuffer.readLine().split(",",-1);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+             
 	}
 
 	/*
@@ -22,11 +37,11 @@ public class CsvQueryProcessor extends QueryProcessingEngine {
 	 */
 	@Override
 	public Header getHeader() throws IOException {
-
+	 Header header = new Header();
 		// read the first line
-
+		header.harr=frow;
 		// populate the header object with the String array containing the header names
-		return null;
+		return header;
 	}
 
 	/**
@@ -48,7 +63,20 @@ public class CsvQueryProcessor extends QueryProcessingEngine {
 	 */
 	@Override
 	public DataTypeDefinitions getColumnType() throws IOException {
-
-		return null;
+         
+         int size = srow.length;
+         DataTypeDefinitions datatypedefinitions = new DataTypeDefinitions();
+         datatypedefinitions.htype=srow;
+         for(int i=0;i< size;i++) {
+        	 
+        	 if (srow[i].matches("^-?\\d+$"))
+        		 datatypedefinitions.htype[i]= "java.lang.Integer";
+        	 else
+        		 datatypedefinitions.htype[i]= "java.lang.String";
+         }
+         
+         
+         
+		return datatypedefinitions;
 	}
 }
